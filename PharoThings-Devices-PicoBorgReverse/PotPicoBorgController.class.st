@@ -1,5 +1,5 @@
 Class {
 	#name : #PotPicoBorgController,
-	#superclass : #PotPicoBorgMotors,
+	#superclass : #PotPicoBorgDevice,
 	#category : #'PharoThings-Devices-PicoBorgReverse'
 }
