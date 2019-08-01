@@ -1,12 +1,10 @@
+"
+Code based on the official PiBorg Pico Borg Reverse code:
+https://www.piborg.org/blog/picoborg-reverse-examples
+"
 Class {
-	#name : #PotPicoBorgRevMotors,
-	#superclass : #PotDevice,
-	#instVars : [
-		'i2cConnection',
-		'i2cAddress',
-		'i2cWrite',
-		'i2cRead'
-	],
+	#name : #PotPicoBorgMotors,
+	#superclass : #PotI2CDevice,
 	#classVars : [
 		'COMMAND_ALL_OFF',
 		'COMMAND_GET_A',
@@ -48,17 +46,21 @@ Class {
 		'I2C_SLAVE',
 		'PWM_MAX'
 	],
-	#category : #'PharoThings-Devices-PicoBorgReverseMotors'
+	#category : #'PharoThings-Devices-PicoBorgReverse'
 }
 
-{ #category : #initialization }
-PotPicoBorgRevMotors >> connect [
-	i2cConnection := board connectToI2CDevice: i2cAddress.
-	"self initializeRegisters"
+{ #category : #'instance creation' }
+PotPicoBorgMotors class >> defaultI2CAddress [
+	^16r44
 ]
 
 { #category : #initialization }
-PotPicoBorgRevMotors >> initialize [
+PotPicoBorgMotors >> connect [
+	super connect
+]
+
+{ #category : #initialization }
+PotPicoBorgMotors >> initialize [
 	"Constant values"
 	I2C_SLAVE := 16r0703.
 	PWM_MAX := 255.
@@ -102,6 +104,36 @@ PotPicoBorgRevMotors >> initialize [
 ]
 
 { #category : #testing }
-PotPicoBorgRevMotors >> isConnected [
+PotPicoBorgMotors >> isConnected [
 	^ i2cConnection notNil
+]
+
+{ #category : #accessing }
+PotPicoBorgMotors >> peripherals [
+	"Subclasses should return collection of all pins and devices which they are configured with"
+	
+	^#()
+]
+
+{ #category : #communication }
+PotPicoBorgMotors >> readCommand: aCommand [ 
+	"RawRead(command, length, [retryCount])
+	Reads data back from the PicoBorg Reverse after sending a GET command
+	Command codes can be found at the top of PicoBorgRev.py, length is the number of bytes to read back
+	The function checks that the first byte read back matches the requested command
+	If it does not it will retry the request until retryCount is exhausted (default is 3 times)
+	Under most circumstances you should use the appropriate function instead of RawRead"
+
+	i2cConnection writeData: aCommand.
+	^ i2cConnection read8BitsAt: I2C_MAX_LEN.
+]
+
+{ #category : #communication }
+PotPicoBorgMotors >> writeCommand: aCommand data: anInteger [
+	"RawWrite(command, data)
+	Sends a raw command on the I2C bus to the PicoBorg Reverse
+	Command codes can be found at the top of PicoBorgRev.py, data is a list of 0 or more byte values
+	Under most circumstances you should use the appropriate function instead of RawWrite"
+
+	i2cConnection write8BitsAt: aCommand data: anInteger
 ]
