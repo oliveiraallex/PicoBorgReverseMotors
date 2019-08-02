@@ -19,7 +19,8 @@ Class {
 	#superclass : #PotPicoBorgDevice,
 	#instVars : [
 		'forwardCommand',
-		'reverseCommand'
+		'reverseCommand',
+		'getCommand'
 	],
 	#category : #'PharoThings-Devices-PicoBorgReverse'
 }
@@ -29,11 +30,13 @@ PotPicoBorgMotors class >> sideLeftorRight: aString [
 	aString = 'left'
 		ifTrue: [ ^ self new
 				forward: COMMAND_SET_A_FWD reverse: COMMAND_SET_A_REV;
+				getCommand: COMMAND_GET_A;
 				name: 'Left motor';
 				yourself ].
 	aString = 'right'
 		ifTrue: [ ^ self new
 				forward: COMMAND_SET_B_FWD reverse: COMMAND_SET_B_REV;
+				getCommand: COMMAND_GET_B;
 				name: 'Right motor';
 				yourself ]
 ]
@@ -58,6 +61,16 @@ PotPicoBorgMotors >> forward: aForwardCommand reverse: aReverseCommand [
 	reverseCommand := aReverseCommand
 ]
 
+{ #category : #accessing }
+PotPicoBorgMotors >> getCommand: aGetCommand [
+	getCommand := aGetCommand
+]
+
+{ #category : #accessing }
+PotPicoBorgMotors >> getSpeed [
+	self readCommand: getCommand
+]
+
 { #category : #initialization }
 PotPicoBorgMotors >> initialize [
 	super initialize
@@ -72,7 +85,12 @@ PotPicoBorgMotors >> power: aNumber [
 	power: 1     -> motor moving forward at 100% power"
 	| pwmValue | 
 	pwmValue := self calculatePWM: aNumber.
-	aNumber < 0
+	aNumber > 0
 		ifTrue: [ self writeCommand: forwardCommand data: pwmValue ]
 		ifFalse: [ self writeCommand: reverseCommand data: pwmValue ]
+]
+
+{ #category : #initialization }
+PotPicoBorgMotors >> stop [
+	self power: 0
 ]
