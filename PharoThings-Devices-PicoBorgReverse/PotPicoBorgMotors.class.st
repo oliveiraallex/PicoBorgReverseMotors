@@ -27,12 +27,12 @@ Class {
 
 { #category : #'instance creation' }
 PotPicoBorgMotors class >> newMotorLeft [
-	^ self sideLeftorRight: #left
+	^ RpiBoard3B current installDevice: (self sideLeftorRight: #left)
 ]
 
 { #category : #'instance creation' }
 PotPicoBorgMotors class >> newMotorRight [
-	^ self sideLeftorRight: #right
+	^ RpiBoard3B current installDevice: (self sideLeftorRight: #right)
 ]
 
 { #category : #private }
