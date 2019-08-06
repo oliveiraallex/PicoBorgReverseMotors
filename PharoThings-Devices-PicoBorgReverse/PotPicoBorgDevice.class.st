@@ -55,11 +55,6 @@ PotPicoBorgDevice class >> defaultI2CAddress [
 ]
 
 { #category : #initialization }
-PotPicoBorgDevice >> connect [
-	"super connect"
-]
-
-{ #category : #initialization }
 PotPicoBorgDevice >> initialize [
 	"Constant values"
 	I2C_SLAVE := 16r0703.

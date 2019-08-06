@@ -25,15 +25,25 @@ Class {
 	#category : #'PharoThings-Devices-PicoBorgReverse'
 }
 
-{ #category : #accessing }
+{ #category : #'instance creation' }
+PotPicoBorgMotors class >> newMotorLeft [
+	^ RpiBoard3B current installDevice: (self sideLeftorRight: #left)
+]
+
+{ #category : #'instance creation' }
+PotPicoBorgMotors class >> newMotorRight [
+	^ RpiBoard3B current installDevice: (self sideLeftorRight: #right)
+]
+
+{ #category : #private }
 PotPicoBorgMotors class >> sideLeftorRight: aString [
-	aString = 'left'
+	aString = #left
 		ifTrue: [ ^ self new
 				forward: COMMAND_SET_A_FWD reverse: COMMAND_SET_A_REV;
 				getCommand: COMMAND_GET_A;
 				name: 'Left motor';
 				yourself ].
-	aString = 'right'
+	aString = #right
 		ifTrue: [ ^ self new
 				forward: COMMAND_SET_B_FWD reverse: COMMAND_SET_B_REV;
 				getCommand: COMMAND_GET_B;
@@ -42,17 +52,12 @@ PotPicoBorgMotors class >> sideLeftorRight: aString [
 ]
 
 { #category : #initialization }
-PotPicoBorgMotors >> calculatePWM: anNumber [
+PotPicoBorgMotors >> calculatePWM: aNumber [
 	"Receive an number between 1 and -1 to set the PWM value between 0 and 255"
-	| pwm |
-	anNumber < 0
-		ifTrue: [ pwm := -1 * 255 * anNumber.
-			pwm > 255
-				ifTrue: [ pwm := 255 ] ]
-		ifFalse: [ pwm := 255 * anNumber.
-			pwm > 255
-				ifTrue: [ pwm := 255 ] ].
-	^ pwm
+
+	^ aNumber < 0
+		ifTrue: [ -1 * 255 * aNumber min: 255 ]
+		ifFalse: [ 255 * aNumber min: 255 ]
 ]
 
 { #category : #initialization }
